@@ -1,0 +1,82 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/datetime-picker/time-input.html">
+
+<dom-module id="micro-seconds-input">
+    <script>
+        /**
+         *  @customElement
+         *  @polymer
+         *
+         *  @extends TimeInput
+         *
+         **/
+        class MicroSecondsInput extends TimeInput {
+
+            static get is() {
+                return 'micro-seconds-input';
+            }
+
+            /**
+             *  overridden method
+             *  this overrides the default time-input template
+             *  microseconds are added to the time-input here
+             **/
+            static get inputTemplate() {
+                return `
+                  <div hidden$="[[_hideHours]]" style="order:7;">
+                    <number-input hidden$="[[hour12]]" index="7" class="time" min="0" max="23" pad-length="2" value="{{hours}}" placeholder="00"></number-input>
+                    <number-input hidden$="[[!hour12]]" index="7" class="time" min="1" max="12" pad-length="2" value="{{hours12}}" placeholder="00"></number-input>
+                  </div>
+                  <span hidden$="[[_hideMinutes]]" style="order:8;">[[_localTimeSeparator]]</span>
+                  <number-input hidden$="[[_hideMinutes]]" style="order:9;" index="9" pad-length="2" min="0" max="59" disabled="[[disabled]]" value="{{minutes}}" placeholder="00"></number-input>
+                  <span hidden$="[[_hideSeconds]]" style="order:10;">[[_localTimeSeparator]]</span>
+                  <number-input hidden$="[[_hideSeconds]]" style="order:10;" index="11" pad-length="2" min="0" max="59" disabled="[[disabled]]" value="{{seconds}}" placeholder="00"></number-input>
+                  <span hidden$="[[_hideMilliseconds]]" style="order:11;">[[_localDecimalSeparator]]</span>
+                  <number-input hidden$="[[_hideMilliseconds]]" style="order:12;" index="13" pad-length="3" min="0" max="999" disabled="[[disabled]]" value="{{milliseconds}}" placeholder="000"></number-input>
+                  <number-input hidden$="[[_hideMilliseconds]]" style="order:12;" index="15" pad-length="3" min="0" max="999" disabled="[[disabled]]" value="{{microseconds}}" placeholder="000"></number-input>
+                  <div class="am-switch" hidden$="[[!hour12]]" style="order:13;" on-mouseup="_switchAm">
+                    <span hidden$="[[!isAm]]">[[_am]]</span>
+                    <span hidden$="[[isAm]]">[[_pm]]</span>
+                  </div>
+          `;
+            }
+
+            /**
+             *  overridden method
+             *  the original method implementation causes tabbing to loop inside the polymer element
+             *  this is corrected in the overriden method
+             **/
+            _checkKeycode(e) {
+                if (!e) {
+                    return;
+                }
+                if (e && e.keyCode) {
+                    switch (e.keyCode) {
+                        case 37: // left
+                            this._focusNumberInput(e, -2);
+                            e.stopPropagation();
+                            return;
+                        case 39: // right
+                            this._focusNumberInput(e, 2);
+                            e.stopPropagation();
+                            return;
+                    }
+                }
+            }
+
+            static get properties() {
+                return {
+                    /**
+                     * the selected microseconds value
+                     */
+                    microseconds: {
+                        type: Number,
+                        value: 1,
+                        notify: true
+                    }
+                }
+            }
+        }
+        window.customElements.define(MicroSecondsInput.is, MicroSecondsInput);
+    </script>
+</dom-module>

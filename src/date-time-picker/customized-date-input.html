@@ -1,0 +1,68 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/datetime-picker/date-input.html">
+
+<dom-module id="customized-date-input">
+    <script>
+        /**
+         *  @customElement
+         *  @polymer
+         *
+         *  @extends DateInput
+         **/
+        class CustomizedDateInput extends DateInput {
+            static get is() {
+                return 'customized-date-input';
+            }
+
+            /**
+             *  overridden method
+             *  this overrides the default date-input template
+             *  the order of selected element when the tab button is pressed is set here 'tabindex$="[[_orderDate.month]]"'
+             **/
+            static get inputTemplate() {
+                return `
+                    <number-input id="month" style="order:[[_orderDate.month]];" tabindex$="[[_orderDate.month]]" index$="[[_orderDate.month]]" hidden$="[[_hideMonth]]" pad-length="2" min="1" max="12" disabled="[[disabled]]" value="{{month}}"></number-input>
+                    <span style="order:[[_orderDate.separatorYearMonth]];"  hidden$="[[_hideMonth]]">[[_seperator]]</span>
+                    <number-input id="day" style="order:[[_orderDate.day]];" tabindex$="[[_orderDate.day]]" index$="[[_orderDate.day]]" hidden$="[[_hideDay]]" pad-length="2" min="1" max="[[_maxDayOfMonth]]" disabled="[[disabled]]" value="{{day}}"></number-input>
+                    <span style="order:[[_orderDate.separatorMonthDay]];" hidden$="[[_hideDay]]">[[_seperator]]</span>
+                    <number-input id="year" style="order:[[_orderDate.year]];" tabindex$="[[_orderDate.year]]" index$="[[_orderDate.year]]" pad-length="4" disabled="[[disabled]]" value="{{year}}"></number-input>
+                `;
+            }
+
+            static get properties() {
+                return {
+                    _seperator: {
+                        type: String,
+                        value: '/'
+                    }
+                }
+            }
+
+            /**
+             *  overridden method
+             *  the original method implementation causes tabbing to loop inside the polymer element
+             *  this is corrected in the overriden method
+             **/
+            _checkKeycode(e) {
+                if (!e) {
+                    return;
+                }
+                if (e && e.keyCode) {
+                    switch (e.keyCode) {
+                        case 37: // left
+                            this._focusNumberInput(e, -2);
+                            e.stopPropagation();
+                            return;
+                        case 39: // right
+                            this._focusNumberInput(e, 2);
+                            e.stopPropagation();
+                            return;
+                    }
+                }
+
+            }
+        }
+
+        window.customElements.define(CustomizedDateInput.is, CustomizedDateInput);
+    </script>
+</dom-module>

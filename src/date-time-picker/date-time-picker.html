@@ -1,0 +1,217 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+
+<link rel="import" href="calendar-button.html">
+<link rel="import" href="time-button.html">
+<link rel="import" href="customized-date-input.html">
+<link rel="import" href="micro-seconds-input.html">
+
+<dom-module id="date-time-picker">
+    <template>
+            <style is="custom-style">
+                :host {
+                    display: block;
+                    width: auto
+                }
+
+               calendar-button,
+               time-button{
+                --iron-icon-fill-color: #1C5397;
+                --input-style_-_padding:6px;
+                --iron-icon-width:16px;
+
+
+                background: #ffffff;
+                height: 27px;
+                width: 28px;
+                position: relative;
+                top: 7px;
+                /* left: 5px; */
+                border: 1px solid rgba(0, 0, 0, .25);
+
+                --datetime-background:#32495d;
+               }
+
+
+               customized-date-input,
+               micro-seconds-input{
+                   background-color: #ffffff;
+                   border: 1px solid rgba(0, 0, 0, .25);
+                   height: 27px;
+                   font-size: 0.9em;
+                   --input-focus_-_color: #E9A75F;
+                   --input-style_-_color: #444444;
+               }
+
+               
+
+            </style>
+
+        <div class="container">
+           <calendar-button class$="[[theme]]"
+                            no-overlap
+                            auto-confirm
+                            tabindex="-1"
+                            year="{{year}}"
+                            month="{{month}}"
+                            day="{{day}}"
+
+
+            ></calendar-button>
+            <customized-date-input locale="[[_localeForDateInput]]"
+                                   _seperator="[[_seperator]]"
+                                   year="{{year}}"
+                                   month="{{month}}"
+                                   day="{{day}}"
+            >
+            </customized-date-input>
+            <time-button class$="[[theme]]"
+                         no-overlap
+                         clamp=""
+                         tabindex="-1"
+                         hours="{{hours}}"
+                         minutes="{{minutes}}"
+                         seconds="{{seconds}}"
+                         milliseconds="{{milliseconds}}"
+                         microseconds="{{microseconds}}"
+            >
+            </time-button>
+
+            <micro-seconds-input clamp=""
+                                 hours="{{hours}}"
+                                 minutes="{{minutes}}"
+                                 seconds="{{seconds}}"
+                                 milliseconds="{{milliseconds}}"
+                                 microseconds="{{microseconds}}"
+            >
+            </micro-seconds-input>
+        </div>
+    </template>
+
+    <script>
+        /**
+         * `mrs-datetime-picker`
+         * A polymer element by incorporating datetime-picker webcomponent by fooloomanzoo
+         *
+         * @customElement
+         * @polymer
+         * @demo demo/index.html
+         */
+
+        class DateTimePicker extends Polymer.Element {
+            static get is() {
+                return 'date-time-picker';
+            }
+
+            static get properties() {
+                return {
+                    /**
+                     * protected property to set date format
+                     * en => MM/DD/YYYY
+                     * fr => DD/MM/YYYY
+                     * ja => YYYY/MM/DD
+                     */
+                    _localeForDateInput: {
+                        type: String,
+                        computed: '_computeDateFormat(dateFormat)'
+                    },
+                    /**
+                     * protected property to set date seperator
+                     * seperator from the date format is given by _computeDateFormat(dateFormat)
+                     */
+                    _seperator: {
+                        type: String,
+                        value: '/'
+                    },
+                    /**
+                     * property to set date format
+                     * MM/DD/YYYY
+                     * DD/MM/YYYY
+                     * YYYY/MM/DD
+                     * MM-DD-YYYY
+                     * DD-MM-YYYY
+                     * YYYY-MM-DD
+                     */
+                    dateFormat: {
+                      type: String
+                    },
+                    year: {
+                        type: Number,
+                        notify: true
+                    },
+                    month: {
+                        type: Number,
+                        notify: true
+                    },
+                    day: {
+                        type: Number,
+                        notify: true
+                    },
+                    hours: {
+                        type: Number,
+                        notify: true
+                    },
+                    minutes: {
+                        type: Number,
+                        notify: true
+                    },
+                    seconds: {
+                        type: Number,
+                        notify: true
+                    },
+                    milliseconds: {
+                        type: Number,
+                        notify: true
+                    },
+                    microseconds: {
+                        type: Number,
+                        notify: true
+                    },
+                    dateTime: {
+                        type: Date,
+                        computed: '_computeDateTimeObject(year, month, day, hours, minutes, seconds, milliseconds)'
+                    }
+
+
+                }
+            }
+
+            _computeDateFormat(dateFormat){
+                switch(dateFormat) {
+                    case 'MM/DD/YYYY':
+                        this._seperator = '/';
+                        return 'en';
+                        break;
+                    case 'MM-DD-YYYY':
+                        this._seperator = '-';
+                        return 'en';
+                        break;
+                    case 'DD/MM/YYYY':
+                        this._seperator = '/';
+                        return 'fr';
+                        break;
+                    case 'DD-MM-YYYY':
+                        this._seperator = '-';
+                        return 'fr';
+                        break;
+                    case 'YYYY/MM/DD':
+                        this._seperator = '/';
+                        return 'ja';
+                        break;
+                    case 'YYYY-MM-DD':
+                        this._seperator = '-';
+                        return 'ja';
+                        break;
+                    default:
+                        return 'en';
+                }
+            }
+
+            _computeDateTimeObject(year, month, day, hours, minutes, seconds, milliseconds){
+                let computedMonth = month -1;
+                return new Date(year, computedMonth, day, hours, minutes, seconds, milliseconds);
+            }
+
+        }
+        window.customElements.define(DateTimePicker.is, DateTimePicker);
+    </script>
+</dom-module>
